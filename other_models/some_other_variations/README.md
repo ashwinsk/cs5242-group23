@@ -1,5 +1,5 @@
 
-Some sample training models
+Some old sample training models which had auc-roc around 0.95-0.97
 #    model v1 - Conv2d
     model = Sequential()
     model.add(Conv2D(64, (1, 2), strides=(1,2), activation='relu', input_shape=(102, 1000, 1)))
