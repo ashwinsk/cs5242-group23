@@ -1,6 +1,6 @@
 
 Some previous iterations which had auc-roc around 0.95-0.97
-#    model v1 - Conv2d  auc-0.97376
+#    model v1 - Conv2d - auc-0.97376
     model = Sequential()
     model.add(Conv2D(64, (1, 2), strides=(1,2), activation='relu', input_shape=(102, 1000, 1)))
     model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -15,7 +15,7 @@ Some previous iterations which had auc-roc around 0.95-0.97
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     model.load_weights('model-5-5-4.h5')
 
-#    model v2 - mlp  auc-0.95001
+#    model v2 - mlp - auc-0.95001
     model = Sequential()
     model.add(Dense(units=512, kernel_initializer='uniform', activation='relu', input_shape=(1000, 102)))
     model.add(Dense(units=32, kernel_initializer='uniform', activation='relu'))
@@ -25,7 +25,7 @@ Some previous iterations which had auc-roc around 0.95-0.97
     model.add(Dense(units=8, kernel_initializer='uniform', activation='relu'))
     model.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
 
- #   model v3 -- using conv1d  auc-0.95716
+ #   model v3 - using conv1d - auc-0.95716
     model = Sequential()
     model.add(Conv1D(filters=64, kernel_size=5, padding='valid', strides=3, input_shape=(1000, 102), kernel_regularizer=regularizers.l2(0.001)))
     model.add(Conv1D(filters=32, kernel_size=5, padding='valid', strides=2, kernel_regularizer=regularizers.l2(0.001)))
@@ -37,7 +37,7 @@ Some previous iterations which had auc-roc around 0.95-0.97
     model.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid', kernel_regularizer=regularizers.l2(0.001)))
     model.load_weights('model-3.h5')
 
-#    model v4 - rnn  auc-0.95920
+#    model v4 - rnn - auc-0.95920
     model = Sequential()
     model.add(Bidirectional(CuDNNGRU(units=64, kernel_regularizer=regularizers.l2(0.001), return_sequences=True, input_shape=(1000, 102))))
     model.add(Bidirectional(CuDNNGRU(units=32, kernel_regularizer=regularizers.l2(0.001), return_sequences=True)))
