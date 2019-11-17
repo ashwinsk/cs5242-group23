@@ -1,10 +1,11 @@
 traindata_folder = 'dataset/train/'
 TRAIN_FULL = 'train/train'
 
+import csv as csv
 import os
+
 import numpy as np
 from tqdm import tqdm
-import csv as csv
 
 if __name__ == '__main__':
 
@@ -15,9 +16,9 @@ if __name__ == '__main__':
     stddev = np.zeros(102)
     length = 0
     files = os.listdir(traindata_folder)
-    arr_sum = np.zeros(shape= (1000, 102))
-    square_arr_sum = np.zeros(shape= (1000, 102))
-    max_arr = np.zeros(shape= (1000, 102))
+    arr_sum = np.zeros(shape=(1000, 102))
+    square_arr_sum = np.zeros(shape=(1000, 102))
+    max_arr = np.zeros(shape=(1000, 102))
     for fname in tqdm(files, desc="Calculating mean and standard deviation"):
         data_x = np.load(os.path.join(traindata_folder, fname))
         if len(data_x) < max_seq_len:
@@ -26,7 +27,7 @@ if __name__ == '__main__':
         arr_sum += data_x
         square_arr_sum += np.power(data_x, 2)
         max_arr1 = np.max(data_x, axis=0)
-        max_arr = np.maximum(max_arr,max_arr1)
+        max_arr = np.maximum(max_arr, max_arr1)
     mean = np.divide(arr_sum, length)
     stddev = np.sqrt(np.divide(square_arr_sum, length) - np.square(mean))
     with open('mean.csv', "w", newline="") as myfile:

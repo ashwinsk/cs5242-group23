@@ -2,7 +2,7 @@ import os
 
 import wandb
 from keras.callbacks.callbacks import EarlyStopping, LearningRateScheduler, ModelCheckpoint
-from keras.layers import Dense, Conv1D, LSTM, Bidirectional, Dropout, Input, multiply, concatenate, \
+from keras.layers import Dense, Conv1D, LSTM, Bidirectional, Dropout, Input, concatenate, \
     BatchNormalization, GlobalMaxPooling1D
 from keras.models import Model
 from keras.optimizers import Adam
@@ -14,7 +14,7 @@ wandb.init(project="cs5242", entity="cs5242-group-23",
            name="3 blocks of conv ks 2", notes="Using 90% of dataset for train",
            config={"epochs": 15, "batch_size": 100, 'lr': 0.001})
 
-from utilities import ROCAUCCallback, BatchMetricsCallback
+from utilities import ROCAUCCallback
 
 TRAIN_DATA_DIR = 'dataset/train/'
 VALID_DATA_DIR = 'dataset/valid/'
@@ -26,41 +26,19 @@ if __name__ == '__main__':
     batch_norm = BatchNormalization()(input)
 
     conv2_1 = Conv1D(filters=64, kernel_size=2, padding='same', strides=1, activation='relu')(batch_norm)
-    conv2_2 = Dense(units=1, kernel_initializer='uniform', activation='sigmoid')(conv2_1)
-    conv2_3 = Conv1D(filters=64, kernel_size=2, padding='same', strides=1, activation='relu')(batch_norm)
-    output_21 = multiply([conv2_2, conv2_3])
-
     conv21_1 = Conv1D(filters=64, kernel_size=3, padding='same', strides=1, activation='relu')(batch_norm)
-    conv21_2 = Dense(units=1, kernel_initializer='uniform', activation='sigmoid')(conv21_1)
-    conv21_3 = Conv1D(filters=64, kernel_size=3, padding='same', strides=1, activation='relu')(batch_norm)
-    output_22 = multiply([conv21_2, conv21_3])
-
     conv22_1 = Conv1D(filters=64, kernel_size=4, padding='same', strides=1, activation='relu')(batch_norm)
-    conv22_2 = Dense(units=1, kernel_initializer='uniform', activation='sigmoid')(conv22_1)
-    conv22_3 = Conv1D(filters=64, kernel_size=4, padding='same', strides=1, activation='relu')(batch_norm)
-    output_23 = multiply([conv22_2, conv22_3])
 
-    op2 = concatenate([output_21, output_22, output_23])
+    op2 = concatenate([conv2_1, conv21_1, conv22_1])
     batch_norm_3 = BatchNormalization()(op2)
     bilstm2 = Bidirectional(LSTM(units=100, return_sequences=True))(batch_norm_3)
     gb_max2 = GlobalMaxPooling1D()(bilstm2)
 
     conv3_1 = Conv1D(filters=128, kernel_size=2, padding='same', strides=1, activation='relu')(batch_norm)
-    conv3_2 = Dense(units=1, kernel_initializer='uniform', activation='sigmoid')(conv3_1)
-    conv3_3 = Conv1D(filters=128, kernel_size=2, padding='same', strides=1, activation='relu')(batch_norm)
-    output_31 = multiply([conv3_2, conv3_3])
-
     conv31_1 = Conv1D(filters=128, kernel_size=3, padding='same', strides=1, activation='relu')(batch_norm)
-    conv31_2 = Dense(units=1, kernel_initializer='uniform', activation='sigmoid')(conv31_1)
-    conv31_3 = Conv1D(filters=128, kernel_size=3, padding='same', strides=1, activation='relu')(batch_norm)
-    output_32 = multiply([conv31_2, conv31_3])
-
     conv32_1 = Conv1D(filters=128, kernel_size=4, padding='same', strides=1, activation='relu')(batch_norm)
-    conv32_2 = Dense(units=1, kernel_initializer='uniform', activation='sigmoid')(conv32_1)
-    conv32_3 = Conv1D(filters=128, kernel_size=4, padding='same', strides=1, activation='relu')(batch_norm)
-    output_33 = multiply([conv32_2, conv32_3])
 
-    op3 = concatenate([output_31, output_32, output_33])
+    op3 = concatenate([conv3_1, conv31_1, conv32_1])
     batch_norm_4 = BatchNormalization()(op3)
     bilstm3 = Bidirectional(LSTM(units=100, return_sequences=True))(batch_norm_4)
     gb_max3 = GlobalMaxPooling1D()(bilstm3)
@@ -95,5 +73,4 @@ if __name__ == '__main__':
     history = model.fit_generator(train_batch, epochs=wandb.config.epochs, validation_data=valid_batch, verbose=1,
                                   workers=2, use_multiprocessing=False,
                                   callbacks=[earlystop, lr_scheduler,
-                                             ROCAUCCallback(validation_data=valid_batch), WandbCallback(), checkpoint, BatchMetricsCallback()])
-    model.save('model.h5')
+                                             ROCAUCCallback(validation_data=valid_batch), WandbCallback(), checkpoint])

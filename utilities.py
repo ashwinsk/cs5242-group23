@@ -63,7 +63,8 @@ class ROCAUCCallback(Callback):
             y_pred.extend(self.model.predict(self.valid_batch[i][0]).flatten())
             y_val.extend(self.valid_batch[i][1].flatten())
         roc_val = roc_auc_score(y_val, y_pred)
-        wandb.log({'roc_0': round(roc_val, 4)})
+        wandb.log({'roc': round(roc_val, 4)})
+        print('===========> roc:', str(round(roc_val, 4)))
         return
 
     def on_batch_begin(self, batch, logs={}):

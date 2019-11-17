@@ -2,8 +2,5 @@
 
 pip install -r requirements.txt
 
+python train_test_valid_splitter.py
 
-# train
-
-
-# test
